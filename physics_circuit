@@ -1,0 +1,122 @@
+onEvent("DCCircuitSeries", "click", function( ) {
+  setScreen("SeriesCircuitScreen");
+});
+onEvent("DCCircuitParallel", "click", function( ) {
+  setScreen("ParallelCircuitScreen");
+});
+onEvent("BackButtonSeries", "click", function( ) {
+  setScreen("homeScreen");
+});
+onEvent("BackButtonParallel", "click", function( ) {
+  setScreen("homeScreen");
+});
+
+var Current;
+var ResistanceOne;
+var ResistanceTwo;
+var ResistanceTotal;
+var VoltageOne;
+var VoltageTwo;
+var TotalVoltage;
+
+function SeriesCircuit() {
+  hideElement("LightBulbBright");
+  hideElement("LightbulbDim");
+  setText("SeriesInstructions", "Plug in values for current, the first resistor, and the second resistor, then click on the switch button.");
+  setText("SeriesClarificationText", "The minimum voltage required to turn on the lightbulb is 16 volts, and the maximum voltage the lightbulb can hold is 100 volts.");
+  onEvent("SwitchButton", "click", function( ) {
+    Current = getNumber("CurrentTextInput");
+    ResistanceOne = getNumber("Resistance_1");
+    ResistanceTwo = getNumber("Resistance_2");
+    ResistanceTotal = ResistanceOne + ResistanceTwo;
+    VoltageOne = Current * ResistanceOne;
+    VoltageTwo = VoltageOne + Current * ResistanceTwo;
+    TotalVoltage = Current * ResistanceTotal;
+    setText("VoltageCalculation", ("The total voltage is: " + TotalVoltage) + " volts");
+    setText("VoltageAtResistorOne", "The voltage at R1 is: " + VoltageOne);
+    setText("VoltageAtResistorTwo", "The voltage at R2 is: " + VoltageTwo);
+    if (TotalVoltage >= 0 && TotalVoltage <= 15) {
+      showElement("LightBulbTransparent");
+      hideElement("LightBulbBright");
+      hideElement("LightbulbDim");
+    } else if ((TotalVoltage >= 16 && TotalVoltage <= 30)) {
+      showElement("LightbulbDim");
+      hideElement("LightBulbBright");
+    } else if ((TotalVoltage >= 31 && TotalVoltage <= 100)) {
+      showElement("LightBulbBright");
+      hideElement("LightbulbDim");
+      hideElement("LightBulbTransparent");
+    } else if ((TotalVoltage >= 101)) {
+      hideElement("LightBulbBright");
+      hideElement("LightBulbTransparent");
+      hideElement("LightbulbDim");
+      setText("VoltageCalculation", "The bulb broke since the maximum voltage was exceeded.");
+    }
+  });
+}
+
+SeriesCircuit();
+
+
+var VoltageParallelCircuit;
+var ResistanceOneParallel;
+var ResistanceTwoParallel;
+var ResistanceThreeParallel;
+var CurrentOneParallel;
+var CurrentTwoParallel;
+var CurrentThreeParallel;
+var TotalCurrentParallel;
+var TotalResistanceParallel;
+
+ 
+function ParallelCircuit() {
+  hideElement("ParallelBrightBulbOne");
+  hideElement("ParallelBrightBulbTwo");
+  hideElement("ParallelBrightBulbThree");
+  setText("ParallelInstructions", "Plug in values for V, R1, R2, and R3, and click on the Switch button.");
+  setText("ParallelReminder", "The minimum current to turn the bulb on is 6 amperes, and the maximum current the bulb can withstand is 125 amperes.");
+  onEvent("SwitchParallel", "click", function( ) {
+    VoltageParallelCircuit = getNumber("VoltageParallel");
+    ResistanceOneParallel = getNumber("ResistanceOneParallel");
+    ResistanceTwoParallel = getNumber("ResistanceTwoParallel");
+    ResistanceThreeParallel = getNumber("ResistanceThreeParallel");
+    TotalResistanceParallel = 1/(1/ResistanceOneParallel + 1/ResistanceTwoParallel + 1/ResistanceThreeParallel);
+    CurrentOneParallel = VoltageParallelCircuit/ResistanceOneParallel;
+    CurrentTwoParallel = VoltageParallelCircuit/ResistanceTwoParallel;
+    CurrentThreeParallel = VoltageParallelCircuit/ResistanceThreeParallel;
+    TotalCurrentParallel = CurrentOneParallel + CurrentTwoParallel + CurrentThreeParallel;
+    setText("CurrentOneParallel", "I1 = " + CurrentOneParallel);
+    setText("CurrentTwoParallel", "I2 = " + CurrentTwoParallel);
+    setText("CurrentThreeParallel", "I3 = " + CurrentThreeParallel);
+    setText("TotalCurrentTextArea", "The total current is: " + TotalCurrentParallel + " amperes.");
+    setText("TotalResistanceParallelTextArea", "The total resistance is " + TotalResistanceParallel + " ohms.");
+    if (ResistanceOneParallel == 0 || (ResistanceTwoParallel == 0 || ResistanceThreeParallel == 0)) {
+      setText("TotalResistanceParallelTextArea", "The battery caught on fire.");
+      setText("TotalCurrentTextArea", "The current passes through the wire at too great of a rate.");
+    }
+    if (TotalCurrentParallel >= 1 && TotalCurrentParallel <= 5) {
+      showElement("ParallelDullBulbOne");
+      showElement("ParallelDullBulbTwo");
+      showElement("ParallelDullBulbThree");
+      hideElement("ParallelBrightBulbOne");
+      hideElement("ParallelBrightBulbTwo");
+      hideElement("ParallelBrightBulbThree");
+    } else if ((TotalCurrentParallel >= 6 && TotalCurrentParallel <= 125)) {
+      showElement("ParallelBrightBulbOne");
+      showElement("ParallelBrightBulbTwo");
+      showElement("ParallelBrightBulbThree");
+      hideElement("ParallelDullBulbOne");
+      hideElement("ParallelDullBulbTwo");
+      hideElement("ParallelDullBulbThree");
+    } else if (TotalCurrentParallel>= 126) {
+      hideElement("ParallelDullBulbOne");
+      hideElement("ParallelDullBulbTwo");
+      hideElement("ParallelDullBulbThree");
+      hideElement("ParallelBrightBulbOne");
+      hideElement("ParallelBrightBulbTwo");
+      hideElement("ParallelBrightBulbThree");
+      setText("TotalCurrentTextArea", "The lightbulb broke because the maximum current was exceeded.");
+    }
+  });
+}
+ParallelCircuit();
